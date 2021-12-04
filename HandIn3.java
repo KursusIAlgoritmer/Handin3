@@ -1,101 +1,98 @@
+import java.util.*;
+
 public class HandIn3 {
 
-    public static void main(String[] args) {
+    static class Forbindelse{
+      public static ArrayList<Forbindelse> liste = new ArrayList<Forbindelse>();
+      StedTid fra, til;
 
-        In in = new In(args[0]);
-
-        int v = in.readInt();
-
-        Digraph G = new Digraph(v);
-
-        for(int i = 1 ; i < v; i++ ){
-          int p = in.readInt();
-          G.addEdge(p, i);
-        }
-
-        int n = in.readInt();
-
-        for(int j = 0; j < n; j++ ){
-          String kommando = in.readString();
-          int startKnude  = in.readInt();
-          int slutKnude   = in.readInt();
-
-          if(kommando.equals("vej")){
-            Stack<Integer> vej = findKortestVejfraAtilB(startKnude,slutKnude,G);
-            int antal = vej.size();
-            for(int i= 0 ; i < antal; i++){
-              if(i< antal-1)  StdOut.print(vej.pop() + "->");
-              if(i==antal-1)  StdOut.println(vej.pop());
-            }
-          }
-          if(kommando.equals("tid")){
-              StdOut.println(beregningAfTid(startKnude,slutKnude,G));
-          }
-
-        }
-
-    }
-
-   private static int beregningAfTid(int startKnude, int slutKnude, Digraph rettetGraf){
-        int tid = 0;
-        int sidsteKnude = 0;
-        for(int denneKnude : findKortestVejfraAtilB(startKnude,slutKnude,rettetGraf)){
-           boolean tagetLift = sidsteKnude !=0 && denneKnude ==0;
-           tid = tagetLift ? tid+5 : tid +1;
-           sidsteKnude = denneKnude;
-        }
-        return tid-1;
-    }
-
-    private static Stack<Integer> findKortestVejfraAtilB(int startKnude, int slutKnude,Digraph rettetGraf ){
-      Stack<Integer> shortestPath = new Stack<Integer>();
-
-      //Direkte vej
-      DepthFirstDirectedPaths dfs = new DepthFirstDirectedPaths(rettetGraf, startKnude);
-      Stack<Integer> directPath = denDirekteVej(dfs,slutKnude);
-
-      //Eller vej hurtigst fra startKnude til bund + vej fra top til slutKnude
-      if(directPath.isEmpty()){
-        pushFraStakTilStak( kortesteVejTil(dfs,findBundKnuder(rettetGraf)) ,                      directPath);
-        pushFraStakTilStak( denDirekteVej(new DepthFirstDirectedPaths(rettetGraf, 0),slutKnude) , directPath);
-        pushFraStakTilStak( directPath,                                                         shortestPath);
-      }else{
-        shortestPath = directPath;
+      private Forbindelse(StedTid a, StedTid b){
+        fra = a; til = b;
       }
-
-      return shortestPath;
+      public static void opret(StedTid a, StedTid b){
+        liste.add(new Forbindelse(a,b));
+      }
+      public String toString(){
+        return fra + "->" + til;
+      }
     }
 
-    private static void pushFraStakTilStak(Stack<Integer> knudeListeFra, Stack<Integer> knudeListeTil){
-      for(int i : knudeListeFra) knudeListeTil.push(i);
+    static class StedTid implements Comparable<StedTid>{
+      public static ArrayList<StedTid> liste = new ArrayList<StedTid>();
+      int knudeNummer,stationsNummer,tidspunkt;
+
+      private StedTid(int s, int t, int k){
+        knudeNummer    = k;
+        stationsNummer = s;
+        tidspunkt      = t;
+      }
+      public int compareTo(StedTid stedTid) {
+        return stationsNummer - stedTid.stationsNummer;
+      }
+      public String toString(){
+        return "( Station: " + stationsNummer + ", Tidspunkt : " + tidspunkt + " , Knude :" + knudeNummer + ")";
+      }
+      public static StedTid opret(int station, int tid, int knude){
+        StedTid st = new StedTid(station, tid, knude);
+        liste.add(st);
+        return st;
+      }
     }
 
-    private static Stack<Integer> kortesteVejTil(DepthFirstDirectedPaths dfs, Iterable<Integer> knudeListe) {
-        Stack<Integer> kortesteVej = new Stack<Integer>();
-        for(int knude : knudeListe){
-            Stack newPath = (Stack) dfs.pathTo(knude);
-            if((newPath != null) && (kortesteVej.size() == 0 || kortesteVej.size() > newPath.size())){
-                kortesteVej = newPath;
-            }
-        }
-        return kortesteVej;
-    }
+    public static void main(String[] args) {
+              In in = new In(args[0]);
 
-    private static Stack<Integer> findBundKnuder(Digraph G){
-        Stack<Integer> bundKnuder = new Stack<Integer>();
-        for (int v = 0; v < G.V(); v++) {
-            if(((Bag)G.adj(v)).isEmpty())
-                bundKnuder.push(v);
-        }
-        return bundKnuder;
-    }
+              int antalStop       = in.readInt();
+              int antalAfgange    = in.readInt();
+              int antalForspg     = in.readInt();
+              int hjemmeStation   = in.readInt();
 
-    private static Stack<Integer> denDirekteVej(DepthFirstDirectedPaths dfs, int v){
-        if(dfs.hasPathTo(v)){
-            return  (Stack)dfs.pathTo(v);
-        }else{
-            return new Stack<Integer>();
-        }
+              //Del A : Opret stedTid for hjemmestationen
+              StedTid.opret(hjemmeStation,0,0);
+
+              //Del B: Opret stedTid for alle ankomster!
+              for(int knudeNummer = 1; knudeNummer <= antalAfgange ; knudeNummer++){
+                int startStation  = in.readInt();
+                int stopStation   = in.readInt(); // sted
+                int afgangsTid    = in.readInt();
+                int ankomstTid    = in.readInt(); // tid
+
+                StedTid endeST = StedTid.opret(stopStation,ankomstTid,knudeNummer);
+                //Del C: Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
+                //  hvis tidspunktet    <= afgangsTid
+                // hvis stationsNummer   = startStation
+                for(StedTid startST: StedTid.liste){
+                  if(startST.stationsNummer == startStation && startST.tidspunkt <= afgangsTid){
+                      Forbindelse.opret(startST,endeST);
+                  }
+                }
+              }
+
+              Digraph G = new Digraph(StedTid.liste.size());
+
+              for(Forbindelse f : Forbindelse.liste)
+                G.addEdge(f.fra.knudeNummer,f.til.knudeNummer);
+
+              DirectedDFS dfs = new DirectedDFS(G,hjemmeStation);
+
+              for(int forsprg = 0; forsprg < antalForspg ; forsprg++){
+                int inputStation  = in.readInt();
+
+                if(dfs.marked(inputStation)){
+                  int tid = -1;
+                  for(StedTid st: StedTid.liste){
+                    if(st.stationsNummer ==  inputStation){
+                        if(tid == -1 || tid > st.tidspunkt) tid = st.tidspunkt;
+                    }
+                  }
+                  StdOut.println(tid);
+                }else{
+                  StdOut.println("Umuligt!");
+                }
+
+
+              }
+
     }
 
 }
