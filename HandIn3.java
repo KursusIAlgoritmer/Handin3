@@ -3,10 +3,7 @@ import java.util.*;
 public class HandIn3 {
 
     static class Forbindelse{
-      // VIGTIGT *********************************************************************************************************
-       //VIGTIGT : SKAL LAVES OM TIL MinPQ istedet for ArrayList!!!!
       public static ArrayList<Forbindelse> liste = new ArrayList<Forbindelse>();
-      // VIGTIGT *********************************************************************************************************
       StedTid fra, til;
 
       private Forbindelse(StedTid a, StedTid b){
@@ -20,7 +17,10 @@ public class HandIn3 {
 
     static class StedTid{
       public static int antalKnuder = 0;
+      // VIGTIGT *********************************************************************************************************
+       //VIGTIGT : SKAL LAVES OM TIL MinPQ istedet for ArrayList!!!!
       public static ArrayList[] stKeyLister;
+      // VIGTIGT *********************************************************************************************************
       int knudeNummer,stationsNummer,tidspunkt;
 
       public StedTid(int s, int t, int k){
