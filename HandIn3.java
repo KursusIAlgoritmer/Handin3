@@ -2,18 +2,6 @@ import java.util.*;
 
 public class HandIn3 {
 
-    static class Forbindelse{
-      public static ArrayList<Forbindelse> liste = new ArrayList<Forbindelse>();
-      BusStop fra, til;
-
-      private Forbindelse(BusStop a, BusStop b){
-        fra = a; til = b;
-      }
-      public static void opret(BusStop a, BusStop b){
-        liste.add(new Forbindelse(a,b));
-      }
-    }
-
     static class BusStop implements Comparable<BusStop>{
       public static int antalKnuder = 0;
       private static MinPQ[] minPQliste;
@@ -73,20 +61,21 @@ public class HandIn3 {
               }
 
             //Del C:
-            //Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
+            //Opretter dags-graf
+            //Opretter kant til denne stedTid fra alle stedTider hvor følgende gælder
             //hvis tidspunktet <= afgangsTid og hvis stationsNummer = afgangStation
+            Digraph dagsGraf       = new Digraph(BusStop.antalKnuder);
+
             for(int i = 0; i < antalStop ; i++){
               for(BusStop endeST : BusStop.hentBS(i))
                 for(BusStop startST: BusStop.hentBS(endeST.afgangsStation)){
                   if(startST.tidspunkt <= endeST.afgangsTid){
-                      Forbindelse.opret(startST,endeST);
+                      dagsGraf.addEdge(startST.knudeNummer,endeST.knudeNummer);
                   }
                 }
               }
 
               //Del D: Forspørgsler
-              Digraph dagsGraf       = new Digraph(BusStop.antalKnuder);
-              for(Forbindelse f : Forbindelse.liste) dagsGraf .addEdge(f.fra.knudeNummer,f.til.knudeNummer);
               DirectedDFS dagsDFS = new DirectedDFS(dagsGraf ,0); //det er hardcoded at vi starter altid på 0
               DirectedDFS totalDFS = new DirectedDFS(totalGraf,hjemmeStation); //her brugers stationer som knuder
 
