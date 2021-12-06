@@ -72,8 +72,9 @@ public class HandIn3 {
                 BusStop.opret(stopStation,ankomstTid,knudeNummer, afgangsTid,startStation);
               }
 
-            //Del C: Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
-            //hvis tidspunktet    <= afgangsTid og hvis stationsNummer = afgangStation
+            //Del C:
+            //Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
+            //hvis tidspunktet <= afgangsTid og hvis stationsNummer = afgangStation
             for(int i = 0; i < antalStop ; i++){
               for(BusStop endeST : BusStop.hentBS(i))
                 for(BusStop startST: BusStop.hentBS(endeST.afgangsStation)){
