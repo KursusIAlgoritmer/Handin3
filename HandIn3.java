@@ -55,7 +55,7 @@ public class HandIn3 {
 
               BusStop.initOpslagStationBusStop(antalAfgange);
 
-              Digraph totalForbindelsesGraf = new Digraph(antalStop);
+              Digraph totalGraf = new Digraph(antalStop);
 
               //Del A : Opret stedTid for hjemmestationen
               BusStop.opret(hjemmeStation,0,0,0,0);
@@ -67,7 +67,7 @@ public class HandIn3 {
                 int afgangsTid    = in.readInt();
                 int ankomstTid    = in.readInt();
 
-                totalForbindelsesGraf.addEdge(startStation,stopStation);
+                totalGraf.addEdge(startStation,stopStation);
 
                 BusStop.opret(stopStation,ankomstTid,knudeNummer, afgangsTid,startStation);
               }
@@ -84,17 +84,17 @@ public class HandIn3 {
               }
 
               //Del D: Forspørgsler
-              Digraph dagsForbindelsesGraf       = new Digraph(BusStop.antalKnuder);
-              for(Forbindelse f : Forbindelse.liste) dagsForbindelsesGraf .addEdge(f.fra.knudeNummer,f.til.knudeNummer);
-              DirectedDFS dagforbindelserDFS = new DirectedDFS(dagsForbindelsesGraf ,0); //det er hardcoded at vi starter altid på 0
-              DirectedDFS totalForbindelsesDFS = new DirectedDFS(totalForbindelsesGraf,hjemmeStation); //her brugers stationer som knuder
+              Digraph dagsGraf       = new Digraph(BusStop.antalKnuder);
+              for(Forbindelse f : Forbindelse.liste) dagsGraf .addEdge(f.fra.knudeNummer,f.til.knudeNummer);
+              DirectedDFS dagsDFS = new DirectedDFS(dagsGraf ,0); //det er hardcoded at vi starter altid på 0
+              DirectedDFS totalDFS = new DirectedDFS(totalGraf,hjemmeStation); //her brugers stationer som knuder
 
               for(int i = 0 ; i < antalForspg ; i++){
                 int station = in.readInt();
 
                 int hurtigsteTid = -1;
                 for(BusStop st : BusStop.hentBS(station)){
-                  if(dagforbindelserDFS.marked(st.knudeNummer)){
+                  if(dagsDFS.marked(st.knudeNummer)){
                     if(hurtigsteTid == -1 || hurtigsteTid > st.tidspunkt){
                       hurtigsteTid = st.tidspunkt;
                       break;
@@ -102,7 +102,7 @@ public class HandIn3 {
                   }
                 }
 
-                boolean erDerForbindelse = totalForbindelsesDFS.marked(station);
+                boolean erDerForbindelse = totalDFS.marked(station);
 
                 if(!erDerForbindelse)         StdOut.println("Jeg køber sku en bil");
                 else if( hurtigsteTid == -1)  StdOut.println("Ikke samme dag");
