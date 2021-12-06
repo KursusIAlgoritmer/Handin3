@@ -18,19 +18,22 @@ public class HandIn3 {
       public static int antalKnuder = 0;
       private static MinPQ[] minPQliste;
       int knudeNummer,stationsNummer,tidspunkt;
+      int afgangsTid, afgangsStation;
 
-      public StedTid(int s, int t, int k){
+      private StedTid(int s, int t, int k, int at, int as){
         knudeNummer    = k;
         stationsNummer = s;
         tidspunkt      = t;
+        afgangsTid     = at;
+        afgangsStation = as;
       }
       public static void initOpslagStationStedTid(int antalAfgange){
         minPQliste = new MinPQ[antalAfgange];
         for(int i = 0; i < minPQliste.length ; i++)  minPQliste[i] = new MinPQ<StedTid>();
       }
-      public static StedTid opret(int station, int tid, int knudeNr){
+      public static StedTid opret(int station, int tid, int knudeNr, int afgangsTid, int afgangsStation){
         antalKnuder++;
-        StedTid st =  new StedTid(station,tid,knudeNr);
+        StedTid st =  new StedTid(station,tid,knudeNr, afgangsTid, afgangsStation);
         minPQliste[station].insert(st);
         return st;
       }
@@ -55,22 +58,26 @@ public class HandIn3 {
               Digraph totalForbindelsesGraf = new Digraph(antalStop);
 
               //Del A : Opret stedTid for hjemmestationen
-              StedTid.opret(hjemmeStation,0,0);
+              StedTid.opret(hjemmeStation,0,0,0,0);
 
               //Del B: Opret stedTid for alle ankomster!
               for(int knudeNummer = 1; knudeNummer <= antalAfgange ; knudeNummer++){
                 int startStation  = in.readInt();
-                int stopStation   = in.readInt(); // sted
+                int stopStation   = in.readInt();
                 int afgangsTid    = in.readInt();
-                int ankomstTid    = in.readInt(); // tid
+                int ankomstTid    = in.readInt();
 
                 totalForbindelsesGraf.addEdge(startStation,stopStation);
 
-                StedTid endeST = StedTid.opret(stopStation,ankomstTid,knudeNummer);
-                //Del C: Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
-                //  hvis tidspunktet    <= afgangsTid og hvis stationsNummer   = startStation
-                for(StedTid startST: StedTid.hentSTer(startStation)){
-                  if(startST.tidspunkt <= afgangsTid){
+                StedTid.opret(stopStation,ankomstTid,knudeNummer, afgangsTid,startStation);
+              }
+
+            //Del C: Opret kant til denne stedTid fra alle stedTider hvor følgende gælder
+            //hvis tidspunktet    <= afgangsTid og hvis stationsNummer = afgangStation
+            for(int i = 0; i < antalStop ; i++){
+              for(StedTid endeST : StedTid.hentSTer(i))
+                for(StedTid startST: StedTid.hentSTer(endeST.afgangsStation)){
+                  if(startST.tidspunkt <= endeST.afgangsTid){
                       Forbindelse.opret(startST,endeST);
                   }
                 }
