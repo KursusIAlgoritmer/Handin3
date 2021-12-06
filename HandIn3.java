@@ -80,7 +80,6 @@ public class HandIn3 {
               Digraph dagsForbindelsesGraf       = new Digraph(StedTid.antalKnuder);
               for(Forbindelse f : Forbindelse.liste) dagsForbindelsesGraf .addEdge(f.fra.knudeNummer,f.til.knudeNummer);
               DirectedDFS dagforbindelserDFS = new DirectedDFS(dagsForbindelsesGraf ,0); //det er hardcoded at vi starter altid på 0
-
               DirectedDFS totalForbindelsesDFS = new DirectedDFS(totalForbindelsesGraf,hjemmeStation); //her brugers stationer som knuder
 
               for(int i = 0 ; i < antalForspg ; i++){
