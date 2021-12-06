@@ -12,7 +12,6 @@ public class HandIn3 {
       public static void opret(StedTid a, StedTid b){
         liste.add(new Forbindelse(a,b));
       }
-      public String toString(){return fra + "->" + til;}
     }
 
     static class StedTid implements Comparable<StedTid>{
@@ -38,7 +37,6 @@ public class HandIn3 {
       public static MinPQ<StedTid> hentSTer(int station){
         return (MinPQ<StedTid>)minPQliste[station];
       }
-      public String toString(){return "( Station: "+stationsNummer+",tid: "+tidspunkt+",Knude :"+knudeNummer+")";}
       public int compareTo(StedTid st) {
         return tidspunkt - st.tidspunkt;
       }
@@ -78,13 +76,10 @@ public class HandIn3 {
                 }
               }
 
-              //for(StedTid st : StedTid.liste) StdOut.println(st);
-              //for(Forbindelse f : Forbindelse.liste) StdOut.println(f);
-
-              //Del D: Oprettelse af den rettede graf
+              //Del D: Forspørgsler
               Digraph dagsForbindelsesGraf       = new Digraph(StedTid.antalKnuder);
               for(Forbindelse f : Forbindelse.liste) dagsForbindelsesGraf .addEdge(f.fra.knudeNummer,f.til.knudeNummer);
-              DirectedDFS dagforbindelserDFS = new DirectedDFS(dagsForbindelsesGraf ,0); //hardcoded at vi starter altid på 0
+              DirectedDFS dagforbindelserDFS = new DirectedDFS(dagsForbindelsesGraf ,0); //det er hardcoded at vi starter altid på 0
 
               DirectedDFS totalForbindelsesDFS = new DirectedDFS(totalForbindelsesGraf,hjemmeStation); //her brugers stationer som knuder
 
