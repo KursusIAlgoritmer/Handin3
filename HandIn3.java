@@ -103,9 +103,9 @@ public class HandIn3 {
                   }
                 }
 
-                boolean erDerForbindelse = totalDFS.marked(station);
+                boolean muligt = totalDFS.marked(station);
 
-                if(!erDerForbindelse)         StdOut.println("Jeg køber sku en bil");
+                if(!muligt)                   StdOut.println("Jeg køber sku en bil");
                 else if( hurtigsteTid == -1)  StdOut.println("Ikke samme dag");
                 else                          StdOut.println(hurtigsteTid);
               }
