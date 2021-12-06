@@ -15,12 +15,9 @@ public class HandIn3 {
       public String toString(){return fra + "->" + til;}
     }
 
-    static class StedTid{
+    static class StedTid implements Comparable<StedTid>{
       public static int antalKnuder = 0;
-      // VIGTIGT *********************************************************************************************************
-       //VIGTIGT : SKAL LAVES OM TIL MinPQ istedet for ArrayList!!!!
-      public static ArrayList[] stKeyLister;
-      // VIGTIGT *********************************************************************************************************
+      private static MinPQ[] minPQliste;
       int knudeNummer,stationsNummer,tidspunkt;
 
       public StedTid(int s, int t, int k){
@@ -29,19 +26,22 @@ public class HandIn3 {
         tidspunkt      = t;
       }
       public static void initOpslagStationStedTid(int antalAfgange){
-        stKeyLister = new ArrayList[antalAfgange];
-        for(int i = 0; i < stKeyLister.length ; i++)  stKeyLister[i] = new ArrayList<StedTid>();
+        minPQliste = new MinPQ[antalAfgange];
+        for(int i = 0; i < minPQliste.length ; i++)  minPQliste[i] = new MinPQ<StedTid>();
       }
       public static StedTid opret(int station, int tid, int knudeNr){
         antalKnuder++;
         StedTid st =  new StedTid(station,tid,knudeNr);
-        stKeyLister[station].add(st);
+        minPQliste[station].insert(st);
         return st;
       }
-      public static ArrayList<StedTid> hentSTer(int station){
-        return (ArrayList<StedTid>)stKeyLister[station];
+      public static MinPQ<StedTid> hentSTer(int station){
+        return (MinPQ<StedTid>)minPQliste[station];
       }
       public String toString(){return "( Station: "+stationsNummer+",tid: "+tidspunkt+",Knude :"+knudeNummer+")";}
+      public int compareTo(StedTid st) {
+        return tidspunkt - st.tidspunkt;
+      }
     }
 
     public static void main(String[] args) {
@@ -91,12 +91,13 @@ public class HandIn3 {
               for(int i = 0 ; i < antalForspg ; i++){
                 int station = in.readInt();
 
-                ArrayList<StedTid> ankomstListe = StedTid.hentSTer(station);
-
                 int hurtigsteTid = -1;
                 for(StedTid st : StedTid.hentSTer(station)){
                   if(dagforbindelserDFS.marked(st.knudeNummer)){
-                    if(hurtigsteTid == -1 || hurtigsteTid > st.tidspunkt) hurtigsteTid = st.tidspunkt;
+                    if(hurtigsteTid == -1 || hurtigsteTid > st.tidspunkt){
+                      hurtigsteTid = st.tidspunkt;
+                      break;
+                    }
                   }
                 }
 
