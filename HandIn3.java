@@ -2,6 +2,8 @@ import java.util.*;
 
 public class HandIn3 {
 
+
+	//dette virker dårligt
     static class BusStop implements Comparable<BusStop>{
       public static int antalKnuder = 0;
       private static MinPQ[] minPQliste;
